@@ -31,9 +31,9 @@ import java.util.stream.Stream;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSourceFile;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,11 +52,15 @@ public class GifReadTest extends GifBaseTest {
         return getAnimatedGifImages().stream();
     }
 
-    @Disabled(value = "RoundtripTest has to be fixed before implementation can throw UnsupportedOperationException")
     @ParameterizedTest
     @MethodSource("data")
-    public void testMetadata(final File imageFile) {
-        Assertions.assertThrows(UnsupportedOperationException.class, () -> Imaging.getMetadata(imageFile));
+    public void testMetadata(final File imageFile) throws ImageReadException, IOException {
+        ImageMetadata metadata = Imaging.getMetadata(imageFile);
+        assertNotNull(metadata);
+        assertTrue(metadata instanceof GifImageMetadata);
+        assertTrue(((GifImageMetadata)metadata).getWidth() > 0);
+        assertTrue(((GifImageMetadata)metadata).getHeight() > 0);
+        assertNotNull(metadata.getItems());
     }
 
     @ParameterizedTest
